@@ -189,7 +189,6 @@ const PdfRenderer = ({ url }: PDfRendererProps) => {
                 toast({
                   title: 'Error loading PDF',
                   description: 'Please try again later',
-                  status: 'error',
                   variant: 'destructive',
                 });
               }}

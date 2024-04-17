@@ -61,7 +61,7 @@ const UploadDropzone = () => {
         if (!res) {
           return toast({
             title: 'Upload failed',
-            message: 'Please try again later',
+            description: 'Please try again later',
             variant: 'destructive',
           });
         }
@@ -73,7 +73,7 @@ const UploadDropzone = () => {
         if (!key) {
           return toast({
             title: 'Upload failed',
-            message: 'Please try again later',
+            description: 'Please try again later',
             variant: 'destructive',
           });
         }
