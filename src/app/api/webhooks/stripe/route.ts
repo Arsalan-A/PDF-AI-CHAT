@@ -5,16 +5,16 @@ import type Stripe from 'stripe';
 
 export async function POST(request: Request) {
   const body = await request.text();
-  const signature = headers().get('Stripe-Signature') ?? '';
+  const signature = headers().get('Stripe-Signature') as string;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
+  console.log('STRIPE Event', body);
 
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET || ''
-    );
+    if (!webhookSecret || !signature) return;
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
     return new Response(
       `Webhook Error: ${err instanceof Error ? err.message : 'Unknown Error'}`,
@@ -23,6 +23,7 @@ export async function POST(request: Request) {
   }
 
   const session = event.data.object as Stripe.Checkout.Session;
+  console.log('Session', session);
 
   if (!session?.metadata?.userId) {
     return new Response(null, {
