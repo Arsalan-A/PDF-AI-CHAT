@@ -2,22 +2,22 @@ import { getUserSubscriptionPlan } from '@/lib/stripe';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
   DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import Image from 'next/image';
 import { Icons } from './Icons';
 import Link from 'next/link';
-import { Gem, LogOut } from 'lucide-react';
-import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/components';
+import { Gem } from 'lucide-react';
+import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/server';
 
 interface UserAccountNavProps {
-  email: string | null;
-  imageUrl: string | null;
+  email: string | undefined;
   name: string;
+  imageUrl: string;
 }
 
 const UserAccountNav = async ({
@@ -31,7 +31,7 @@ const UserAccountNav = async ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild className='overflow-visible'>
         <Button className='rounded-full h-8 w-8 aspect-square bg-slate-400'>
-          <Avatar className='relative  w-8 h-8'>
+          <Avatar className='relative w-8 h-8'>
             {imageUrl ? (
               <div className='relative aspect-square h-full w-full'>
                 <Image
@@ -44,18 +44,19 @@ const UserAccountNav = async ({
             ) : (
               <AvatarFallback>
                 <span className='sr-only'>{name}</span>
-                <Icons.user className='h-4 w-4 text-zinc-500' />
+                <Icons.user className='h-4 w-4 text-zinc-900' />
               </AvatarFallback>
             )}
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent className='bg-white' align='end'>
         <div className='flex items-center justify-start gap-2 p-2'>
           <div className='flex flex-col space-y-0.5 leading-none'>
             {name && <p className='font-medium text-sm text-black'>{name}</p>}
             {email && (
-              <p className='w-[200px truncate text-xs  text-zinc-700]'>
+              <p className='w-[200px] truncate text-xs text-zinc-700'>
                 {email}
               </p>
             )}
@@ -69,8 +70,8 @@ const UserAccountNav = async ({
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          {subscriptionPlan.isSubscribed ? (
-            <Link href='/dashboard'>Dashboard</Link>
+          {subscriptionPlan?.isSubscribed ? (
+            <Link href='/dashboard/billing'>Manage Subscription</Link>
           ) : (
             <Link href='/pricing'>
               Upgrade <Gem className='text-blue-600 h-4 w-4 ml-1.5' />

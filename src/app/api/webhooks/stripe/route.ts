@@ -8,8 +8,6 @@ export async function POST(request: Request) {
   const signature = headers().get('Stripe-Signature') as string;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
-  console.log('STRIPE Event', body);
-
   let event: Stripe.Event;
 
   try {
@@ -49,8 +47,6 @@ export async function POST(request: Request) {
         ),
       },
     });
-
-    console.log('User', user);
   }
 
   if (event.type === 'invoice.payment_succeeded') {
@@ -70,8 +66,6 @@ export async function POST(request: Request) {
         ),
       },
     });
-
-    console.log('User', user);
   }
 
   return new Response(null, { status: 200 });
