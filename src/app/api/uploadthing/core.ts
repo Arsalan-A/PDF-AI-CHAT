@@ -65,22 +65,20 @@ const onUploadComplete = async ({
 
     const pageLevelDocs = await loader.load();
 
-    const pageAmt = pageLevelDocs.length;
+    const pagesAmt = pageLevelDocs.length;
 
     const { subscriptionPlan } = metadata;
     const { isSubscribed } = subscriptionPlan;
 
     const isProExceeded =
-      pageAmt > PLANS.find((plan) => plan.name === 'Pro')!.pagesPerPdf;
+      pagesAmt > PLANS.find((plan) => plan.name === 'Pro')!.pagesPerPdf;
     const isFreeExceeded =
-      pageAmt > PLANS.find((plan) => plan.name === 'Free')!.pagesPerPdf;
+      pagesAmt > PLANS.find((plan) => plan.name === 'Free')!.pagesPerPdf;
 
-    if ((isSubscribed && isProExceeded) || (!isSubscribed && isFreeExceeded)) {
-      await db.file.update({
-        data: { uploadStatus: 'FAILED' },
-        where: { id: createdFile.id },
-      });
-    }
+    console.log('isSubscribed', isSubscribed);
+    console.log('pagesAmt', pagesAmt);
+    console.log('isProExceeded', isProExceeded);
+    console.log('isFreeExceeded', isFreeExceeded);
 
     const pinecone = new Pinecone();
 
@@ -95,10 +93,25 @@ const onUploadComplete = async ({
       namespace: createdFile.id,
     });
 
-    await db.file.update({
-      data: { uploadStatus: 'SUCCESS' },
-      where: { id: createdFile.id },
-    });
+    if ((isSubscribed && isProExceeded) || (!isSubscribed && isFreeExceeded)) {
+      console.log('UPDATE DB');
+      const file = await db.file.update({
+        data: {
+          uploadStatus: 'FAILED',
+        },
+        where: {
+          id: createdFile.id,
+          userId: metadata.userId,
+        },
+      });
+
+      console.log('UPDATE DB FILE', file);
+    } else {
+      await db.file.update({
+        data: { uploadStatus: 'SUCCESS' },
+        where: { id: createdFile.id },
+      });
+    }
   } catch (err) {
     console.error('ERROR', err);
     await db.file.update({
