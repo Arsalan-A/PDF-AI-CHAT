@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       session.subscription as string
     );
 
-    await db.user.update({
+    const user = await db.user.update({
       where: {
         id: session.metadata.userId,
       },
@@ -48,6 +48,8 @@ export async function POST(request: Request) {
         ),
       },
     });
+
+    console.log('User', user);
   }
 
   if (event.type === 'invoice.payment_succeeded') {
@@ -56,7 +58,7 @@ export async function POST(request: Request) {
       session.subscription as string
     );
 
-    await db.user.update({
+    const user = await db.user.update({
       where: {
         stripeSubscriptionId: subscription.id,
       },
@@ -67,6 +69,8 @@ export async function POST(request: Request) {
         ),
       },
     });
+
+    console.log('User', user);
   }
 
   return new Response(null, { status: 200 });
