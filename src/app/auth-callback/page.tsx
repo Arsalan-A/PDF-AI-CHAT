@@ -12,21 +12,19 @@ const Page = () => {
 
   const origin = searchParams.get('origin');
 
-  const { data, isLoading, isError, error } = trpc.authCallback.useQuery(
-    undefined,
-    {
+  const { data, isSuccess, isLoading, isError, error } =
+    trpc.authCallback.useQuery(undefined, {
       retry: true,
       retryDelay: 500,
-    }
-  );
+    });
 
   useEffect(() => {
-    if (data?.success) {
+    if (isSuccess) {
       router.push(origin ? `/${origin}` : '/dashboard');
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.success, origin]);
+  }, [isSuccess, origin]);
 
   useEffect(() => {
     if (isError && error.data?.code === 'UNAUTHORIZED') {
